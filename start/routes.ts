@@ -23,3 +23,29 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async () => {
   return { hello: 'world' }
 })
+
+Route.post("/login", "AuthController.login");
+Route.post("/logout", "AuthController.logout");
+
+Route.post("/cliente/cadastro", "ClienteController.store");
+Route.put("/cliente/editar", "ClienteController.update");
+Route.put("/cliente/foto", "ClienteController.updatePhoto");
+
+Route.get("/doacoes", "DoacaoController.all");
+
+Route.group(() => {
+  Route.get("auth/me", "AuthController.me");
+
+  Route.resource("/endereco", "EnderecosController").only([
+    "store",
+    "index",
+    "update"
+  ]);
+
+  Route.post("/doacao/cadastro", "DoacaoController.store");
+  Route.get("/doacao/lista", "DoacaoController.index");
+  //Route.get("/pedidos", "PedidosController.index");
+  //Route.get("/pedidos/:hash_id", "PedidosController.show");
+
+ //Route.get("/estabelecimento/pedidos", "EstabelecimentosController.pedidos");
+}).middleware("auth");
