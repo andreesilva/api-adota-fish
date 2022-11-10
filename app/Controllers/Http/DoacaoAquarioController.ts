@@ -1,43 +1,31 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database';
-//import CidadesEstabelecimento from 'App/Models/CidadesEstabelecimento';
 import Cliente from 'App/Models/Cliente';
-import CreateAdocaoValidator from 'App/Validators/CreateDoacaoValidator'
-import Doacao from 'App/Models/Doacao';
-import Pet from 'App/Models/Pet';
-//import Endereco from 'App/Models/Endereco';
+import CreateAdocaoAquarioValidator from 'App/Validators/CreateDoacaoAquarioValidator'
 import Aquario from 'App/Models/Aquario';
-//import Pedido from 'App/Models/Pedido';
-//import PedidoEndereco from 'App/Models/PedidoEndereco';
-//import PedidoProduto from 'App/Models/PedidoProduto';
-//import PedidoStatus from 'App/Models/PedidoStatus';
-//import Produto from 'App/Models/Produto';
+import DoacaoAquario from 'App/Models/DoacaoAquario';
 
-export default class DoacaoController {
+export default class DoacaoAquarioController {
     
     public async store({ auth, response, request }: HttpContextContract) {
 
-        const payload = await request.validate(CreateAdocaoValidator);
+        const payload = await request.validate(CreateAdocaoAquarioValidator);
         
         const userAuth = await auth.use("api").authenticate();
         const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
                 
         const trx = await Database.transaction();
         
-        try{
-            if(request.input('tipo_doacao') == 1){
-                    
+        try{      
                 const aquario = await Aquario.create({
                     foto: payload.foto,
                     capacidade:payload.capacidade,
                     descricao: payload.descricao
                 });  
 
-                const doacao = await Doacao.create({
+                const doacao = await DoacaoAquario.create({
                 cliente_id_doador: cliente.id,
-                tipo_doacao: payload.tipo_doacao,
                 aquario_id:aquario.id, 
-                pet_id:0,
                 status: 1
                 });
     
@@ -46,32 +34,8 @@ export default class DoacaoController {
                 return response.ok({
                     id: doacao.id,
                     cliente_id_doador: doacao.cliente_id_doador,
-                    tipo_doacao: doacao.tipo_doacao,
                     status: doacao.status
                 });
-            }else{
-                const pet = await Pet.create({
-                    foto: payload.foto,
-                    especie_id: payload.especie_id,
-                });  
-
-                const doacao = await Doacao.create({
-                cliente_id_doador: cliente.id,
-                tipo_doacao: payload.tipo_doacao,
-                aquario_id:0,
-                pet_id:pet.id, 
-                status: 1
-                });
-    
-                await trx.commit();
-                
-                return response.ok({
-                    id: doacao.id,
-                    cliente_id_doador: doacao.cliente_id_doador,
-                    tipo_doacao: doacao.tipo_doacao,
-                    status: doacao.status
-                });
-            }        
         }
         catch(error){
             await trx.rollback();
@@ -81,14 +45,10 @@ export default class DoacaoController {
     
     public async all({ response }: HttpContextContract) {
     
-        const doacoes = await Doacao.query()
+        const doacoes = await DoacaoAquario.query()
             .where("status", 1)
             .preload("cliente_doador")
             .preload("aquario")
-            .preload("pet", (petsQuery) => {
-                petsQuery
-                .preload("especie")
-            })
             .orderBy("id", "desc");
 
         return response.ok(doacoes);
@@ -98,14 +58,10 @@ export default class DoacaoController {
         const userAuth = await auth.use("api").authenticate();
         const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
 
-        const doacoes = await Doacao.query()
+        const doacoes = await DoacaoAquario.query()
             .where("cliente_id_doador", cliente.id)
             .preload("cliente_doador")
             .preload("aquario")
-            .preload("pet", (petsQuery) => {
-                petsQuery
-                .preload("especie")
-            })
             .orderBy("id", "desc");
 
         return response.ok(doacoes);

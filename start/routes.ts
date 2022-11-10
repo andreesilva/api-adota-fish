@@ -31,7 +31,8 @@ Route.post("/cliente/cadastro", "ClienteController.store");
 Route.put("/cliente/editar", "ClienteController.update");
 Route.put("/cliente/foto", "ClienteController.updatePhoto");
 
-Route.get("/doacoes", "DoacaoController.all");
+Route.get("/doacoes-pet", "DoacaoPetController.all");
+Route.get("/doacoes-aquario", "DoacaoAquarioController.all");
 
 Route.group(() => {
   Route.get("auth/me", "AuthController.me");
@@ -42,8 +43,10 @@ Route.group(() => {
     "update"
   ]);
 
-  Route.post("/doacao/cadastro", "DoacaoController.store");
-  Route.get("/doacao/lista", "DoacaoController.index");
+  Route.post("/doacao/cadastro-aquario", "DoacaoAquarioController.store");
+  Route.post("/doacao/cadastro-pet", "DoacaoPetController.store");
+  Route.get("/doacao/lista-aquario", "DoacaoAquarioController.index");
+  Route.get("/doacao/lista-pet", "DoacaoPetController.index");
   //Route.get("/pedidos", "PedidosController.index");
   //Route.get("/pedidos/:hash_id", "PedidosController.show");
 
