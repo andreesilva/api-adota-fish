@@ -4,7 +4,7 @@ import Cliente from './Cliente'
 import Pet from './Pet'
 
 export default class DoacaoPet extends BaseModel {
-  @column({ isPrimary: true, serializeAs: null })
+  @column({ isPrimary: true })
   public id: number
 
   @column()

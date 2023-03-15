@@ -7,6 +7,12 @@ export default class Pet extends BaseModel {
 
   @column()
   public foto: string;
+
+  @column()
+  public quantidade: number
+
+  @column()
+  public observacao:  string | null
   
   @column()
   public especie_id: number;

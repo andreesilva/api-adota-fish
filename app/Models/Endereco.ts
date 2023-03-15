@@ -20,6 +20,12 @@ export default class Endereco extends BaseModel {
   @column()
   public rua: string
 
+  @column()
+  public pontoReferencia: string | null
+
+  @column()
+  public complemento: string | null
+
   @hasOne(() => Cidade, {
     localKey: "cidadeId",
     foreignKey: "id"

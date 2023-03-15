@@ -17,6 +17,8 @@ export default class CreateEditEnderecoValidator {
       rules.maxLength(20),
     ]),
     bairro: schema.string({ trim: true }, [rules.maxLength(255)]),
+    ponto_referencia: schema.string.nullableAndOptional(),
+    complemento: schema.string.nullableAndOptional(),
   });
 
 

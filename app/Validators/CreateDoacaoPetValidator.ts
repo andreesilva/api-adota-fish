@@ -8,7 +8,10 @@ export default class CreateDoacaoPetValidator {
   public schema = schema.create({
     
     foto: schema.string({ trim: true }),
+    quantidade: schema.number(),
     especie_id: schema.number(),
+    observacao: schema.string.nullableAndOptional({ trim: true }, [
+      rules.maxLength(255)]),
   })
 
   public messages: CustomMessages = {}

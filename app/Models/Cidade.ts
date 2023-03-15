@@ -11,9 +11,6 @@ export default class Cidade extends BaseModel {
   @column()
   public estado_id: number;
 
-  @column()
-  public ativo: boolean;
-
   @hasOne(() => Estado, {
     foreignKey: "id",
     localKey: "estado_id",

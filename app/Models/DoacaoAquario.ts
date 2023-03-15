@@ -4,7 +4,7 @@ import Cliente from './Cliente'
 import Aquario from './Aquario'
 
 export default class DoacaoAquario extends BaseModel {
-  @column({ isPrimary: true, serializeAs: null })
+  @column({ isPrimary: true})
   public id: number
 
   @column()
@@ -24,6 +24,7 @@ export default class DoacaoAquario extends BaseModel {
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
+  
   @hasOne(() => Cliente, {
     foreignKey: "id",
     localKey: "cliente_id_doador",

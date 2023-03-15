@@ -11,5 +11,5 @@ export default class Aquario extends BaseModel {
   public capacidade: number
 
   @column()
-  public descricao: string
+  public descricao:  string | null
 }

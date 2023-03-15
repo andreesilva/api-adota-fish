@@ -1,0 +1,22 @@
+import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
+export default class EditPasswordValidator {
+  constructor(protected ctx: HttpContextContract) { }
+
+  public refs = schema.refs({
+    user_id: this.ctx.auth.user?.id
+  });
+
+
+  public schema = schema.create({
+    password: schema.string.nullableAndOptional({}, [rules.minLength(8), rules.maxLength(180)]),
+  });
+
+  public messages: CustomMessages = {
+    required: "{{field}} é obrigatório para a edição",
+    "password.minLenght": "{{field}} deve ter no mínimo 8 caracteres",
+    "password.maxlenght": "{{field}} deve ter no máximo 180 caracteres",
+  };
+
+}

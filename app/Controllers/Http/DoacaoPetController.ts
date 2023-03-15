@@ -20,6 +20,8 @@ export default class DoacaoPetController {
                 const pet = await Pet.create({
                     foto: payload.foto,
                     especie_id: payload.especie_id,
+                    quantidade: payload.quantidade,
+                    observacao: payload.observacao
                 });  
 
                 const doacao = await DoacaoPet.create({
@@ -41,12 +43,21 @@ export default class DoacaoPetController {
             return response.badRequest("Something in the request is wrong" + error);
         }
     }
-    
     public async all({ response }: HttpContextContract) {
     
         const doacoes = await DoacaoPet.query()
             .where("status", 1)
-            .preload("cliente_doador")
+            .preload("cliente_doador",(addressQuery) => {
+                addressQuery
+                .preload("usuario")
+                .preload("endereco",(cityQuery)=>{
+                    cityQuery
+                    .preload("cidade",(stateQuery) => {
+                        stateQuery
+                        .preload("estado")
+                    })
+                })
+            })
             .preload("pet", (petsQuery) => {
                 petsQuery
                 .preload("especie")
@@ -62,7 +73,19 @@ export default class DoacaoPetController {
 
         const doacoes = await DoacaoPet.query()
             .where("cliente_id_doador", cliente.id)
-            .preload("cliente_doador")
+            .where("status", 1)
+            .orWhere("status", 2)
+            .preload("cliente_doador",(addressQuery) => {
+                addressQuery
+                .preload("usuario")
+                .preload("endereco",(cityQuery)=>{
+                    cityQuery
+                    .preload("cidade",(stateQuery) => {
+                        stateQuery
+                        .preload("estado")
+                    })
+                })
+            })
             .preload("pet", (petsQuery) => {
                 petsQuery
                 .preload("especie")
@@ -71,26 +94,101 @@ export default class DoacaoPetController {
 
         return response.ok(doacoes);
     }
-    /*
     public async show({ params, response }: HttpContextContract) {
-        const idPedido = params.hash_id;
+        const idDoacao = params.id;
 
-        const pedido = await Pedido.query()
-            .where("hash_id", idPedido)
-            .preload("produtos", (produtoQuery) => {
-                produtoQuery.preload("produto");
-            }).preload("cliente")
-            .preload("endereco")
-            .preload("estabelecimento")
-            .preload("meio_pagamento")
-            .preload("pedido_status", (statusQuery) => {
-                statusQuery.preload("status");
-            }).first();
+        const pedido = await DoacaoPet.query()
+            .where("id", idDoacao)
+            .preload("cliente_doador",(addressQuery) => {
+                addressQuery
+                .preload("usuario")
+                .preload("endereco",(cityQuery)=>{
+                    cityQuery
+                    .preload("cidade",(stateQuery) => {
+                        stateQuery
+                        .preload("estado")
+                    })
+                })
+            })
+            .preload("pet", (petsQuery) => {
+                petsQuery
+                .preload("especie")
+            })
+            .orderBy("id", "desc")
+            .first();
 
         if (pedido == null) {
-            return response.notFound("Pedido não encontrado");
+            return response.notFound("Não encontrado");
         }
         return response.ok(pedido);
     }
-    */
+
+    public async inactivate({ response ,params}: HttpContextContract) {
+      
+        const id = params.id;
+
+        try {
+
+            const doacao = await DoacaoPet.findByOrFail("id", id);
+            
+            doacao.merge({
+                status: 2
+            });
+
+            await doacao.save();
+
+
+            return response.ok(true);
+
+        } catch (error) {
+            return response.badRequest("Something in the request is wrong");
+        }
+
+    }
+
+    public async activate({ response ,params}: HttpContextContract) {
+      
+        const id = params.id;
+
+        try {
+
+            const doacao = await DoacaoPet.findByOrFail("id", id);
+            
+            doacao.merge({
+                status: 1
+            });
+
+            await doacao.save();
+
+
+            return response.ok(true);
+
+        } catch (error) {
+            return response.badRequest("Something in the request is wrong");
+        }
+
+    }
+
+    public async delete({ response ,params}: HttpContextContract) {
+      
+        const id = params.id;
+
+        try {
+
+            const doacao = await DoacaoPet.findByOrFail("id", id);
+            
+            doacao.merge({
+                status: 3
+            });
+
+            await doacao.save();
+
+
+            return response.ok(true);
+
+        } catch (error) {
+            return response.badRequest("Something in the request is wrong");
+        }
+
+    }
 }
