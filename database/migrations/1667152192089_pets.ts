@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.increments('id').primary();
       table.string("foto").notNullable();
       table.integer("especie_id").unsigned().notNullable().references("id").inTable("especies").onDelete("CASCADE");
+      table.text("observacao").notNullable();
     })
   }
 
