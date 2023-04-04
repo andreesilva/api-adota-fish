@@ -38,8 +38,8 @@ Route.post("/cliente/cadastro", "ClienteController.store");
 Route.put("/cliente/editar", "ClienteController.update");
 Route.put("/cliente/foto", "ClienteController.updatePhoto");
 
-Route.get("/doacoes-pet", "DoacaoPetController.all");
-Route.get("/doacoes-aquario", "DoacaoAquarioController.all");
+Route.get("/doacoes-pet/:id", "DoacaoPetController.all");
+Route.get("/doacoes-aquario/:id", "DoacaoAquarioController.all");
 
 Route.post("/endereco", "EnderecosController.store");
 

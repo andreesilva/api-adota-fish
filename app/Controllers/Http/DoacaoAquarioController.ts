@@ -44,9 +44,12 @@ export default class DoacaoAquarioController {
         }
     }
 
-    public async all({ response }: HttpContextContract) {
-    
-        const doacoes = await DoacaoAquario.query()
+    public async all({ response, params }: HttpContextContract) {
+
+        const id = params.id;
+
+        if(id == 0){
+            const doacoes = await DoacaoAquario.query()
             .where("status", 1)
             .preload("cliente_doador",(addressQuery) => {
                 addressQuery
@@ -62,7 +65,28 @@ export default class DoacaoAquarioController {
             .preload("aquario")
             .orderBy("id", "desc");
 
-        return response.ok(doacoes);
+            return response.ok(doacoes);
+        }else{
+            const doacoes = await DoacaoAquario.query()
+            .where("status", 1)
+            .preload("cliente_doador",(addressQuery) => {
+                addressQuery
+                .preload("usuario")
+                .preload("endereco",(cityQuery)=>{
+                    cityQuery
+                    .preload("cidade",(stateQuery) => {
+                        stateQuery
+                        .preload("estado",(stateIdQuery) => {
+                            stateIdQuery.where('id', id)
+                          })
+                    })
+                })
+            })
+            .preload("aquario")
+            .orderBy("id", "desc");    
+
+            return response.ok(doacoes);
+        }
     }
    
     public async index({ auth, response }: HttpContextContract) {
@@ -184,5 +208,5 @@ export default class DoacaoAquarioController {
             return response.badRequest("Something in the request is wrong");
         }
 
-    }
+    }   
 }

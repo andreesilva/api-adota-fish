@@ -43,9 +43,12 @@ export default class DoacaoPetController {
             return response.badRequest("Something in the request is wrong" + error);
         }
     }
-    public async all({ response }: HttpContextContract) {
-    
-        const doacoes = await DoacaoPet.query()
+    public async all({ response, params }: HttpContextContract) {
+
+        const id = params.id;
+
+        if(id == 0){
+            const doacoes = await DoacaoPet.query()
             .where("status", 1)
             .preload("cliente_doador",(addressQuery) => {
                 addressQuery
@@ -65,6 +68,30 @@ export default class DoacaoPetController {
             .orderBy("id", "desc");
 
         return response.ok(doacoes);
+        }else{
+            const doacoes = await DoacaoPet.query()
+            .where("status", 1)
+            .preload("cliente_doador",(addressQuery) => {
+                addressQuery
+                .preload("usuario")
+                .preload("endereco",(cityQuery)=>{
+                    cityQuery
+                    .preload("cidade",(stateQuery) => {
+                        stateQuery
+                        .preload("estado",(stateIdQuery) => {
+                            stateIdQuery.where('id', id)
+                          })
+                    })
+                })
+            })
+            .preload("pet", (petsQuery) => {
+                petsQuery
+                .preload("especie")
+            })
+            .orderBy("id", "desc");
+
+            return response.ok(doacoes);
+        }
     }
    
     public async index({ auth, response }: HttpContextContract) {
