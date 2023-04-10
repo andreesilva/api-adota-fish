@@ -69,6 +69,23 @@ export default class DoacaoPetController {
 
         return response.ok(doacoes);
         }else{
+            const existRegister = await Database.rawQuery(
+                `select doacao_pets.id, pets.foto, cidades.nome,estados.nome ,especies.nome
+                from doacao_pets
+                inner join pets on doacao_pets.pet_id = pets.id 
+                inner join especies on pets.especie_id = especies.id 
+                inner join clientes on doacao_pets.cliente_id_doador = clientes.id 
+                inner join users on clientes.user_id = users.id 
+                inner join enderecos on clientes.id = enderecos.cliente_id 
+                inner join cidades on enderecos.cidade_id = cidades.id 
+                inner join estados on cidades.estado_id = estados.id 
+                where doacao_pets.status = :status and estados.id = :estado`,
+                {
+                  status: 1,
+                  estado:id
+                }
+              )
+
             const doacoes = await DoacaoPet.query()
             .where("status", 1)
             .preload("cliente_doador",(addressQuery) => {
@@ -90,7 +107,11 @@ export default class DoacaoPetController {
             })
             .orderBy("id", "desc");
 
-            return response.ok(doacoes);
+            if(existRegister[0] == ""){
+                return response.ok([]);
+              }else{
+                return response.ok(doacoes);
+              }
         }
     }
    

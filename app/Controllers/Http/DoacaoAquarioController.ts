@@ -4,6 +4,7 @@ import Cliente from 'App/Models/Cliente';
 import CreateAdocaoAquarioValidator from 'App/Validators/CreateDoacaoAquarioValidator'
 import Aquario from 'App/Models/Aquario';
 import DoacaoAquario from 'App/Models/DoacaoAquario';
+import Event from '@ioc:Adonis/Core/Event'
 
 export default class DoacaoAquarioController {
     
@@ -67,9 +68,24 @@ export default class DoacaoAquarioController {
 
             return response.ok(doacoes);
         }else{
-            const doacoes = await DoacaoAquario.query()
-            .where("status", 1)
-            .preload("cliente_doador",(addressQuery) => {
+            const existRegister = await Database.rawQuery(
+                `select doacao_aquarios.id,aquarios.foto,aquarios.capacidade,cidades.nome,estados.nome 
+                from doacao_aquarios 
+                inner join aquarios on doacao_aquarios.aquario_id = aquarios.id 
+                inner join clientes on doacao_aquarios.cliente_id_doador = clientes.id 
+                inner join users on clientes.user_id = users.id 
+                inner join enderecos on clientes.id = enderecos.cliente_id 
+                inner join cidades on enderecos.cidade_id = cidades.id 
+                inner join estados on cidades.estado_id = estados.id 
+                where doacao_aquarios.status = :status and estados.id = :estado`,
+                {
+                  status: 1,
+                  estado:id
+                }
+              )
+    
+              const doacoes = await DoacaoAquario.query()     
+              .preload("cliente_doador",(addressQuery) => {
                 addressQuery
                 .preload("usuario")
                 .preload("endereco",(cityQuery)=>{
@@ -77,15 +93,23 @@ export default class DoacaoAquarioController {
                     .preload("cidade",(stateQuery) => {
                         stateQuery
                         .preload("estado",(stateIdQuery) => {
-                            stateIdQuery.where('id', id)
-                          })
+                            stateIdQuery
+                            .where("id",id)
+                        })
                     })
                 })
             })
             .preload("aquario")
-            .orderBy("id", "desc");    
+            .where("status",1)
+            .orderBy("id", "desc")
+                          
+            //Event.on('db:query', Database.prettyPrint)
 
-            return response.ok(doacoes);
+            if(existRegister[0] == ""){
+                return response.ok([]);
+              }else{
+                return response.ok(doacoes);
+              }
         }
     }
    
