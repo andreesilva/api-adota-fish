@@ -1,6 +1,10 @@
 {
   "name": "api-adota-fish",
   "version": "1.0.0",
+  "engines": {
+    "node": "18.15.0",
+    "npm": "9.5.0"
+  },
   "private": true,
   "scripts": {
     "dev": "node ace serve --watch",
