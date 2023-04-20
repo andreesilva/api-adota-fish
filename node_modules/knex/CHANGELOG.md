@@ -1,5 +1,36 @@
 # Master (Unreleased)
 
+# 2.4.2 - 22 January, 2022
+
+### Bug fixes
+
+- CLI: Fix incorrent EOL causing errors on Linux #5455
+
+# 2.4.1 - 18 January, 2022
+
+### Bug fixes
+
+- PostgreSQL: Fix Malformed array literal 2.4.0 Regression #5439
+
+# 2.4.0 - 06 January, 2022
+
+### New features:
+
+- Support partial unique indexes #5316
+- Make compiling SQL in error message optional #5282
+
+### Bug fixes
+
+- Insert array into json column #5321
+- Fix unexpected max acquire-timeout #5377
+- Fix: orWhereJson #5361
+- MySQL: Add assertion for basic where clause not to be object or array #1227
+- SQLite: Fix changing the default value of a boolean column in SQLite #5319
+
+### Typings:
+
+- add missing type for 'expirationChecker' on PgConnectionConfig #5334
+
 # 2.3.0 - 31 August, 2022
 
 ### New features:
