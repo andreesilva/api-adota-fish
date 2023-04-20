@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node ace serve --watch",
-    "build": "CI=false node ace build --production",
+    "build": "node ace build --production",
     "start": "node server.js"
   },
   "devDependencies": {

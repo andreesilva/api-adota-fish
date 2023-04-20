@@ -4,7 +4,6 @@ import Cliente from 'App/Models/Cliente';
 import CreateAdocaoAquarioValidator from 'App/Validators/CreateDoacaoAquarioValidator'
 import Aquario from 'App/Models/Aquario';
 import DoacaoAquario from 'App/Models/DoacaoAquario';
-import Event from '@ioc:Adonis/Core/Event'
 
 export default class DoacaoAquarioController {
     
