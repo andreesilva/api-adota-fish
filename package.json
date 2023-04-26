@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node ace serve --watch",
-    "build": "node ace build --production",
+    "dev": "node ace serve --max_old_space_size=8192 --watch",
+    "build": "node ace build --max_old_space_size=8192 --production",
     "start": "node server.js"
   },
   "devDependencies": {
