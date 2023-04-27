@@ -19,16 +19,12 @@ export default class ClienteController {
                 tipo: "cliente"
             });
     
-            //await user.save();
-    
             const cliente = await Cliente.create({
                 nome: payload.nome,
                 telefone: payload.telefone,
                 userId: user.id,
                 foto:" "
             });
-    
-            //await cliente.save();
     
             await trx.commit();
     
@@ -141,7 +137,6 @@ export default class ClienteController {
 
     public async resetPassword({ request, response }: HttpContextContract) {
         const payload = await request.validate(EditPasswordValidator);
-        //const userAuth = await auth.use("api").authenticate();
 
         try {
 

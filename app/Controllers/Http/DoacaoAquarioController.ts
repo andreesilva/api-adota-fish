@@ -101,8 +101,6 @@ export default class DoacaoAquarioController {
             .preload("aquario")
             .where("status",1)
             .orderBy("id", "desc")
-                          
-            //Event.on('db:query', Database.prettyPrint)
 
             if(existRegister[0] == ""){
                 return response.ok([]);
