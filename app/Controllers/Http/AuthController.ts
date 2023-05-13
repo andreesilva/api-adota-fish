@@ -18,6 +18,10 @@ export default class AuthController {
         const email = request.input("email");
         const password = request.input("password");
 
+        console.log(email);
+        console.log(password);
+        console.log("E-mail enviado com sucesso!");
+
         try {
             const user = await User.findByOrFail("email", email);
 
