@@ -9,7 +9,7 @@ export default class CreateDoacaoAquarioValidator {
     
     foto: schema.string({ trim: true }),
     capacidade: schema.number(),
-    descricao: schema.string.nullableAndOptional({ trim: true }),
+    descricao: schema.string.nullableAndOptional(),
   })
 
   public messages: CustomMessages = {}
