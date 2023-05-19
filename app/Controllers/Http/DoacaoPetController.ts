@@ -65,7 +65,7 @@ export default class DoacaoPetController {
                 petsQuery
                 .preload("especie")
             })
-            .orderBy("id", "desc");
+            .orderBy("created_at", "desc");
 
         return response.ok(doacoes);
         }else{
@@ -105,7 +105,7 @@ export default class DoacaoPetController {
                 petsQuery
                 .preload("especie")
             })
-            .orderBy("id", "desc");
+            .orderBy("created_at", "desc");
 
             if(existRegister[0] == ""){
                 return response.ok([]);
@@ -138,7 +138,7 @@ export default class DoacaoPetController {
                 petsQuery
                 .preload("especie")
             })
-            .orderBy("id", "desc");
+            .orderBy("created_at", "desc");
 
         return response.ok(doacoes);
     }

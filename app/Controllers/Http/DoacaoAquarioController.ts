@@ -63,7 +63,7 @@ export default class DoacaoAquarioController {
                 })
             })
             .preload("aquario")
-            .orderBy("id", "desc");
+            .orderBy("created_at", "desc");
 
             return response.ok(doacoes);
         }else{
@@ -93,7 +93,7 @@ export default class DoacaoAquarioController {
                         stateQuery
                         .preload("estado",(stateIdQuery) => {
                             stateIdQuery
-                            .where("id",id)
+                            .where("created_at",id)
                         })
                     })
                 })
@@ -131,7 +131,7 @@ export default class DoacaoAquarioController {
                 })
             })
             .preload("aquario")
-            .orderBy("id", "desc");
+            .orderBy("created_at", "desc");
 
         return response.ok(doacoes);
     }
