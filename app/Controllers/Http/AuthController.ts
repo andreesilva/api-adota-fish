@@ -5,6 +5,7 @@ import User from 'App/Models/User';
 import ValidacaoSenha from 'App/Models/ValidacaoSenha';
 require("dotenv").config();
 import AWS from 'aws-sdk';
+const sgMail = require('@sendgrid/mail')
 
 export default class AuthController {
     
@@ -163,6 +164,7 @@ export default class AuthController {
 
         const from = "adotafish@gmail.com";
     
+        /*
         var logo = "https://firebasestorage.googleapis.com/v0/b/app-adota-fish.appspot.com/o/images%2Femail%2Fimage-6.jpeg?alt=media&token=9daf26fb-9f86-4ac6-8a89-a910035b9223";
         var cadeado = "https://firebasestorage.googleapis.com/v0/b/app-adota-fish.appspot.com/o/images%2Femail%2Fimage-5.png?alt=media&token=de516fb4-c621-4f83-887f-0a67d82f3fa5";
         
@@ -495,5 +497,24 @@ export default class AuthController {
         } catch (error) {
           console.log(error);
         }
+*/
+       
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const msg = {
+  to: from, // Change to your recipient
+  from: email, // Change to your verified sender
+  subject: 'Sending with SendGrid is Fun',
+  text: 'and easy to do anywhere, even with Node.js',
+  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+}
+sgMail
+  .send(msg)
+  .then(() => {
+    console.log('Email sent')
+  })
+  .catch((error) => {
+    console.error(error)
+  })
     }
 }
