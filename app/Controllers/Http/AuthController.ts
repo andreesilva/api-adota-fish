@@ -5,7 +5,7 @@ import User from 'App/Models/User';
 import ValidacaoSenha from 'App/Models/ValidacaoSenha';
 require("dotenv").config();
 import AWS from 'aws-sdk';
-const sgMail = require('@sendgrid/mail')
+
 
 export default class AuthController {
     
@@ -499,7 +499,7 @@ export default class AuthController {
         }
 */
        
-
+const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const msg = {
   to: from, // Change to your recipient
