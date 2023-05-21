@@ -6,6 +6,9 @@ import ValidacaoSenha from 'App/Models/ValidacaoSenha';
 require("dotenv").config();
 import AWS from 'aws-sdk';
 
+const sgMail = require('@sendgrid/mail')
+
+
 
 export default class AuthController {
     
@@ -499,22 +502,27 @@ export default class AuthController {
         }
 */
        
-const sgMail = require('@sendgrid/mail')
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const msg = {
-  to: from, // Change to your recipient
-  from: email, // Change to your verified sender
-  subject: 'Sending with SendGrid is Fun',
-  text: 'and easy to do anywhere, even with Node.js',
-  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  to: email,
+  from: from,
+  templateId: "d-475d6836e6de4cafa3ca0c636e14d8a3",
+    dynamic_template_data: {
+      name:clienteNome,
+      code: codeVerification,
+    },
 }
-sgMail
-  .send(msg)
-  .then(() => {
-    console.log('Email sent')
-  })
-  .catch((error) => {
-    console.error(error)
-  })
-    }
+try{
+  sgMail.send(msg);
+  console.log('Email enviado com sucesso!!!!');
+}catch(error){
+  console.error('Não foi possível enviar o email');
+  console.error(error);
+
+  if(error.response){
+    console.error(error.response.body)
+  }
+}
+}
 }
