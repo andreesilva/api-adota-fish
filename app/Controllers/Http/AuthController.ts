@@ -22,9 +22,9 @@ export default class AuthController {
         const email = request.input("email");
         const password = request.input("password");
 
-        console.log(email);
-        console.log(password);
-        console.log("E-mail enviado com sucesso!");
+        //console.log(email);
+        //console.log(password);
+        //console.log("E-mail enviado com sucesso!");
 
         try {
             const user = await User.findByOrFail("email", email);
@@ -50,7 +50,8 @@ export default class AuthController {
             response.ok(token);
 
         }
-        catch {
+        catch (error){
+          console.log(error);
             return response.badRequest("Invalid credentials");
         }
     }
