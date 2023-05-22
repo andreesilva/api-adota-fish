@@ -4,6 +4,7 @@ import Cliente from 'App/Models/Cliente';
 import CreateAdocaoPetValidator from 'App/Validators/CreateDoacaoPetValidator'
 import Pet from 'App/Models/Pet';
 import DoacaoPet from 'App/Models/DoacaoPet';
+import EditCreatePhotoClienteValidator from 'App/Validators/EditCreatePhotoClienteValidator';
 
 export default class DoacaoPetController {
     
@@ -233,6 +234,35 @@ export default class DoacaoPetController {
 
 
             return response.ok(true);
+
+        } catch (error) {
+            return response.badRequest("Something in the request is wrong");
+        }
+
+    }
+
+    public async updatePhoto({ request, response, params}: HttpContextContract) {
+        const payload = await request.validate(EditCreatePhotoClienteValidator);
+       // const userAuth = await auth.use("api").authenticate();
+
+       
+      
+            const id = params.id;    
+
+        try {
+            //const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
+            const pet = await Pet.findByOrFail("id", id);
+
+            pet.merge({
+                foto: payload.foto
+            });
+
+            await pet.save();
+
+            return response.ok({
+            id:pet.id,
+            foto:pet.foto
+        });
 
         } catch (error) {
             return response.badRequest("Something in the request is wrong");
