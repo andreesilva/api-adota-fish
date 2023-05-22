@@ -244,14 +244,10 @@ export default class DoacaoPetController {
 
     public async updatePhoto({ request, response, params}: HttpContextContract) {
         const payload = await request.validate(EditCreatePhotoClienteValidator);
-       // const userAuth = await auth.use("api").authenticate();
-
-       
       
             const id = params.id;    
 
-        try {
-            //const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
+        try {       
             const pet = await Pet.findByOrFail("id", id);
 
             pet.merge({
@@ -270,4 +266,36 @@ export default class DoacaoPetController {
         }
 
     }
+
+
+public async update({ request, response, params}: HttpContextContract) {
+    const payload = await request.validate(CreateAdocaoPetValidator);
+  
+        const id = params.id;    
+
+    try {       
+        const pet = await Pet.findByOrFail("id", id);
+
+        pet.merge({
+            foto: payload.foto,
+            especie_id: payload.especie_id,
+            quantidade: payload.quantidade,
+            observacao: payload.observacao
+        });
+
+        await pet.save();
+
+        return response.ok({
+        id:pet.id,
+        foto:pet.foto,
+        especie_id:pet.especie_id,
+        quantidade:pet.quantidade,
+        observacao:pet.observacao
+    });
+
+    } catch (error) {
+        return response.badRequest("Something in the request is wrong");
+    }
+
+}
 }

@@ -46,6 +46,7 @@ Route.group(() => {
   Route.put("/doacao/excluir/pet/:id", "DoacaoPetController.delete");
 
   Route.put("/doacao/pet/foto/:id", "DoacaoPetController.updatePhoto");
+  Route.put("/doacao/pet/editar/:id", "DoacaoPetController.update");
 
   Route.get("/cliente/:id", "ClienteController.show");
 
