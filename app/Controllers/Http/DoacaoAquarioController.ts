@@ -91,10 +91,7 @@ export default class DoacaoAquarioController {
                     cityQuery
                     .preload("cidade",(stateQuery) => {
                         stateQuery
-                        .preload("estado",(stateIdQuery) => {
-                            stateIdQuery
-                            .where("created_at",id)
-                        })
+                        .preload("estado")
                     })
                 })
             })
