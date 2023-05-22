@@ -100,7 +100,8 @@ export default class DoacaoAquarioController {
             })
             .preload("aquario")
             .where("status",1)
-            .orderBy("id", "desc")
+            
+            .orderBy("created_at", "desc");
 
             if(existRegister[0] == ""){
                 return response.ok([]);
