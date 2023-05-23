@@ -5,6 +5,7 @@ import CreateAdocaoPetValidator from 'App/Validators/CreateDoacaoPetValidator'
 import Pet from 'App/Models/Pet';
 import DoacaoPet from 'App/Models/DoacaoPet';
 import EditCreatePhotoClienteValidator from 'App/Validators/EditCreatePhotoClienteValidator';
+import CreateDoacaoPetNotPhotValidator from 'App/Validators/CreateDoacaoPetNotPhotoValidator';
 
 export default class DoacaoPetController {
     
@@ -269,7 +270,7 @@ export default class DoacaoPetController {
 
 
 public async update({ request, response, params}: HttpContextContract) {
-    const payload = await request.validate(CreateAdocaoPetValidator);
+    const payload = await request.validate(CreateDoacaoPetNotPhotValidator);
   
         const id = params.id;    
 
@@ -277,7 +278,6 @@ public async update({ request, response, params}: HttpContextContract) {
         const pet = await Pet.findByOrFail("id", id);
 
         pet.merge({
-            foto: payload.foto,
             especie_id: payload.especie_id,
             quantidade: payload.quantidade,
             observacao: payload.observacao
@@ -287,7 +287,6 @@ public async update({ request, response, params}: HttpContextContract) {
 
         return response.ok({
         id:pet.id,
-        foto:pet.foto,
         especie_id:pet.especie_id,
         quantidade:pet.quantidade,
         observacao:pet.observacao
