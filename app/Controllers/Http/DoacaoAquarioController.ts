@@ -4,6 +4,8 @@ import Cliente from 'App/Models/Cliente';
 import CreateAdocaoAquarioValidator from 'App/Validators/CreateDoacaoAquarioValidator'
 import Aquario from 'App/Models/Aquario';
 import DoacaoAquario from 'App/Models/DoacaoAquario';
+import CreateDoacaoAquarioNotPhotoValidator from 'App/Validators/CreateDoacaoAquarioNotPhotoValidator';
+import EditCreatePhotoClienteValidator from 'App/Validators/EditCreatePhotoClienteValidator';
 
 export default class DoacaoAquarioController {
     
@@ -230,4 +232,56 @@ export default class DoacaoAquarioController {
         }
 
     }   
+
+    public async updatePhoto({ request, response, params}: HttpContextContract) {
+        const payload = await request.validate(EditCreatePhotoClienteValidator);
+      
+            const id = params.id;    
+
+        try {       
+            const aquario = await Aquario.findByOrFail("id", id);
+
+            aquario.merge({
+                foto: payload.foto
+            });
+
+            await aquario.save();
+
+            return response.ok({
+            id:aquario.id,
+            foto:aquario.foto
+        });
+
+        } catch (error) {
+            return response.badRequest("Something in the request is wrong");
+        }
+
+    }
+
+    public async update({ request, response, params}: HttpContextContract) {
+        const payload = await request.validate(CreateDoacaoAquarioNotPhotoValidator);
+      
+            const id = params.id;    
+    
+        try {       
+            const aquario = await Aquario.findByOrFail("id", id);
+    
+            aquario.merge({
+                capacidade: payload.capacidade,
+                descricao: payload.descricao
+            });
+    
+            await aquario.save();
+    
+            return response.ok({
+            id:aquario.id,
+            capacidade:aquario.capacidade,
+            descricao:aquario.descricao
+        });
+    
+        } catch (error) {
+            return response.badRequest("Something in the request is wrong");
+        }
+    
+    }
 }
