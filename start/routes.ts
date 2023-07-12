@@ -26,6 +26,8 @@ Route.post("/endereco", "EnderecosController.store");
 Route.group(() => {
   Route.get("auth/me", "AuthController.me");
   Route.put("/cliente/senha", "ClienteController.updatePassword");
+  Route.delete("/cliente/excluir", "ClienteController.delete");
+
 
   Route.resource("/endereco", "EnderecosController").only([
     "index",

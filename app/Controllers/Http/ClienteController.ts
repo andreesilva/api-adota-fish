@@ -86,6 +86,27 @@ export default class ClienteController {
             return response.badRequest("Something in the request is wrong");
         }
     }
+    public async delete({ response, auth }: HttpContextContract){
+
+
+        const userAuth = await auth.use("api").authenticate();
+        
+        const trx = await Database.transaction();
+
+        try{
+            await trx.commit();    
+
+            await User.query().where("id", userAuth.id).delete();
+
+            return response.ok(true);
+
+
+        }catch(error){
+            await trx.rollback();
+            return response.badRequest("Não possível excluir o cliente");
+            console.error(error);
+        }
+   }
 
     public async updatePhoto({ request, response, auth }: HttpContextContract) {
         const payload = await request.validate(EditCreatePhotoClienteValidator);
