@@ -4,7 +4,7 @@ import Cliente from 'App/Models/Cliente';
 import User from 'App/Models/User';
 import ValidacaoSenha from 'App/Models/ValidacaoSenha';
 require("dotenv").config();
-import AWS from 'aws-sdk';
+//import AWS from 'aws-sdk';
 
 const sgMail = require('@sendgrid/mail')
 
@@ -12,11 +12,13 @@ const sgMail = require('@sendgrid/mail')
 
 export default class AuthController {
     
+    /*
     SES = new AWS.SES({
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         region: process.env.AWS_REGION,
       });
+      */
 
     public async login({ auth, request, response }: HttpContextContract) {
         const email = request.input("email");
