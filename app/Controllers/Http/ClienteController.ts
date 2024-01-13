@@ -95,7 +95,6 @@ export default class ClienteController {
     } catch (error) {
       await trx.rollback();
       return response.badRequest("Não possível excluir o cliente");
-      console.error(error);
     }
   }
 
