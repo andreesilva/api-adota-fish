@@ -1,15 +1,15 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
 export default class Aquario extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
-  public foto: string
+  public foto: string;
 
   @column()
-  public capacidade: number
+  public capacidade: number;
 
   @column()
-  public descricao:  string | null
+  public descricao: string | null;
 }

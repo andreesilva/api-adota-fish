@@ -1,6 +1,6 @@
-import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import Cliente from 'App/Models/Cliente';
-import User from 'App/Models/User'
+import BaseSeeder from "@ioc:Adonis/Lucid/Seeder";
+import Cliente from "App/Models/Cliente";
+import User from "App/Models/User";
 
 export default class extends BaseSeeder {
   public async run() {

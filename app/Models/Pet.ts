@@ -1,19 +1,19 @@
-import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
-import Especie from './Especie';
+import { BaseModel, column, HasOne, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import Especie from "./Especie";
 
 export default class Pet extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
   public foto: string;
 
   @column()
-  public quantidade: number
+  public quantidade: number;
 
   @column()
-  public observacao:  string | null
-  
+  public observacao: string | null;
+
   @column()
   public especie_id: number;
 

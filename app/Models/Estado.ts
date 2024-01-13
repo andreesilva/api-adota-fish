@@ -1,12 +1,12 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
 export default class Estado extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
-  public nome: string
+  public nome: string;
 
   @column()
-  public uf: string
+  public uf: string;
 }
