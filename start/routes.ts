@@ -1,8 +1,8 @@
-import Route from '@ioc:Adonis/Core/Route'
+import Route from "@ioc:Adonis/Core/Route";
 
-Route.get('/', async () => {
-  return { hello: 'world' }
-})
+Route.get("/", async () => {
+  return { hello: "world" };
+});
 
 Route.post("/login", "AuthController.login");
 Route.post("/logout", "AuthController.logout");
@@ -28,11 +28,7 @@ Route.group(() => {
   Route.put("/cliente/senha", "ClienteController.updatePassword");
   Route.delete("/cliente/excluir", "ClienteController.delete");
 
-
-  Route.resource("/endereco", "EnderecosController").only([
-    "index",
-    "update"
-  ]);
+  Route.resource("/endereco", "EnderecosController").only(["index", "update"]);
 
   Route.post("/doacao/cadastro-aquario", "DoacaoAquarioController.store");
   Route.post("/doacao/cadastro-pet", "DoacaoPetController.store");
@@ -40,7 +36,10 @@ Route.group(() => {
   Route.get("/doacao/lista-pet", "DoacaoPetController.index");
   Route.get("/doacao/aquario/:id", "DoacaoAquarioController.show");
   Route.get("/doacao/pet/:id", "DoacaoPetController.show");
-  Route.put("/doacao/inativacao/aquario/:id", "DoacaoAquarioController.inactivate");
+  Route.put(
+    "/doacao/inativacao/aquario/:id",
+    "DoacaoAquarioController.inactivate"
+  );
   Route.put("/doacao/ativacao/aquario/:id", "DoacaoAquarioController.activate");
   Route.put("/doacao/excluir/aquario/:id", "DoacaoAquarioController.delete");
   Route.put("/doacao/inativacao/pet/:id", "DoacaoPetController.inactivate");
@@ -57,5 +56,4 @@ Route.group(() => {
 
   Route.get("/especie/:id", "EspecieController.show");
   Route.post("/especie/especieId", "EspecieController.especieId");
-
 }).middleware("auth");

@@ -1,76 +1,67 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Database from '@ioc:Adonis/Lucid/Database';
-import Cliente from 'App/Models/Cliente';
-import CreateAdocaoAquarioValidator from 'App/Validators/CreateDoacaoAquarioValidator'
-import Aquario from 'App/Models/Aquario';
-import DoacaoAquario from 'App/Models/DoacaoAquario';
-import CreateDoacaoAquarioNotPhotoValidator from 'App/Validators/CreateDoacaoAquarioNotPhotoValidator';
-import EditCreatePhotoClienteValidator from 'App/Validators/EditCreatePhotoClienteValidator';
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import Database from "@ioc:Adonis/Lucid/Database";
+import Cliente from "App/Models/Cliente";
+import CreateAdocaoAquarioValidator from "App/Validators/CreateDoacaoAquarioValidator";
+import Aquario from "App/Models/Aquario";
+import DoacaoAquario from "App/Models/DoacaoAquario";
+import CreateDoacaoAquarioNotPhotoValidator from "App/Validators/CreateDoacaoAquarioNotPhotoValidator";
+import EditCreatePhotoClienteValidator from "App/Validators/EditCreatePhotoClienteValidator";
 
 export default class DoacaoAquarioController {
-    
-    public async store({ auth, response, request }: HttpContextContract) {
+  public async store({ auth, response, request }: HttpContextContract) {
+    const payload = await request.validate(CreateAdocaoAquarioValidator);
 
-        const payload = await request.validate(CreateAdocaoAquarioValidator);
-        
-        const userAuth = await auth.use("api").authenticate();
-        const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
-                
-        const trx = await Database.transaction();
-       
-        try{      
-                const aquario = await Aquario.create({
-                    foto: payload.foto,
-                    capacidade:payload.capacidade,
-                    descricao: payload.descricao
-                    
-                });  
+    const userAuth = await auth.use("api").authenticate();
+    const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
 
-                const doacao = await DoacaoAquario.create({
-                cliente_id_doador: cliente.id,
-                aquario_id:aquario.id, 
-                status: 1
-                });
-    
-                await trx.commit();
+    const trx = await Database.transaction();
 
-                return response.ok({
-                    id: doacao.id,
-                    cliente_id_doador: doacao.cliente_id_doador,
-                    status: doacao.status
-                });
-        }
-        catch(error){
-            await trx.rollback();
-            return response.badRequest("Something in the request is wrong" + error);
-        }
+    try {
+      const aquario = await Aquario.create({
+        foto: payload.foto,
+        capacidade: payload.capacidade,
+        descricao: payload.descricao,
+      });
+
+      const doacao = await DoacaoAquario.create({
+        cliente_id_doador: cliente.id,
+        aquario_id: aquario.id,
+        status: 1,
+      });
+
+      await trx.commit();
+
+      return response.ok({
+        id: doacao.id,
+        cliente_id_doador: doacao.cliente_id_doador,
+        status: doacao.status,
+      });
+    } catch (error) {
+      await trx.rollback();
+      return response.badRequest("Something in the request is wrong" + error);
     }
+  }
 
-    public async all({ response, params }: HttpContextContract) {
+  public async all({ response, params }: HttpContextContract) {
+    const id = params.id;
 
-        const id = params.id;
+    if (id == 0) {
+      const doacoes = await DoacaoAquario.query()
+        .where("status", 1)
+        .preload("cliente_doador", (addressQuery) => {
+          addressQuery.preload("usuario").preload("endereco", (cityQuery) => {
+            cityQuery.preload("cidade", (stateQuery) => {
+              stateQuery.preload("estado");
+            });
+          });
+        })
+        .preload("aquario")
+        .orderBy("created_at", "desc");
 
-        if(id == 0){
-            const doacoes = await DoacaoAquario.query()
-            .where("status", 1)
-            .preload("cliente_doador",(addressQuery) => {
-                addressQuery
-                .preload("usuario")
-                .preload("endereco",(cityQuery)=>{
-                    cityQuery
-                    .preload("cidade",(stateQuery) => {
-                        stateQuery
-                        .preload("estado")
-                    })
-                })
-            })
-            .preload("aquario")
-            .orderBy("created_at", "desc");
-
-            return response.ok(doacoes);
-        }else{
-            const existRegister = await Database.rawQuery(
-                `select doacao_aquarios.id,aquarios.foto,aquarios.capacidade,cidades.nome,estados.nome 
+      return response.ok(doacoes);
+    } else {
+      const existRegister = await Database.rawQuery(
+        `select doacao_aquarios.id,aquarios.foto,aquarios.capacidade,cidades.nome,estados.nome 
                 from doacao_aquarios 
                 inner join aquarios on doacao_aquarios.aquario_id = aquarios.id 
                 inner join clientes on doacao_aquarios.cliente_id_doador = clientes.id 
@@ -79,209 +70,179 @@ export default class DoacaoAquarioController {
                 inner join cidades on enderecos.cidade_id = cidades.id 
                 inner join estados on cidades.estado_id = estados.id 
                 where doacao_aquarios.status = :status and estados.id = :estado`,
-                {
-                  status: 1,
-                  estado:id
-                }
-              )
-    
-              const doacoes = await DoacaoAquario.query()     
-              .preload("cliente_doador",(addressQuery) => {
-                addressQuery
-                .preload("usuario")
-                .preload("endereco",(cityQuery)=>{
-                    cityQuery
-                    .preload("cidade",(stateQuery) => {
-                        stateQuery
-                        .preload("estado",(stateIdQuery) => {
-                            stateIdQuery.where('id', id)
-                          })                       
-                    })
-                })
-            })
-            .preload("aquario")
-            .where("status",1)
-            
-            .orderBy("created_at", "desc");
-
-            if(existRegister[0] == ""){
-                return response.ok([]);
-              }else{
-                return response.ok(doacoes);
-              }
+        {
+          status: 1,
+          estado: id,
         }
-    }
-   
-    public async index({ auth, response }: HttpContextContract) {
-        const userAuth = await auth.use("api").authenticate();
-        const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
+      );
 
+      const doacoes = await DoacaoAquario.query()
+        .preload("cliente_doador", (addressQuery) => {
+          addressQuery.preload("usuario").preload("endereco", (cityQuery) => {
+            cityQuery.preload("cidade", (stateQuery) => {
+              stateQuery.preload("estado", (stateIdQuery) => {
+                stateIdQuery.where("id", id);
+              });
+            });
+          });
+        })
+        .preload("aquario")
+        .where("status", 1)
 
-        const doacoes = await DoacaoAquario.query()
-            .where("cliente_id_doador", cliente.id)
-            .where("status", 1)
-            .orWhere("status", 2)
-            .preload("cliente_doador",(addressQuery) => {
-                addressQuery
-                .preload("usuario")
-                .preload("endereco",(cityQuery)=>{
-                    cityQuery
-                    .preload("cidade",(stateQuery) => {
-                        stateQuery
-                        .preload("estado")
-                    })
-                })
-            })
-            .preload("aquario")
-            .orderBy("created_at", "desc");
+        .orderBy("created_at", "desc");
 
+      if (existRegister[0] == "") {
+        return response.ok([]);
+      } else {
         return response.ok(doacoes);
+      }
     }
-    
-    public async show({ params, response }: HttpContextContract) {
-        const idDoacao = params.id;
+  }
 
-        const pedido = await DoacaoAquario.query()
-            .where("id", idDoacao)
-            .preload("cliente_doador",(addressQuery) => {
-                addressQuery
-                .preload("usuario")
-                .preload("endereco",(cityQuery)=>{
-                    cityQuery
-                    .preload("cidade",(stateQuery) => {
-                        stateQuery
-                        .preload("estado")
-                    })
-                })
-            })
-            .preload("aquario")
-            .orderBy("id", "desc")
-            .first();
+  public async index({ auth, response }: HttpContextContract) {
+    const userAuth = await auth.use("api").authenticate();
+    const cliente = await Cliente.findByOrFail("user_id", userAuth.id);
 
-        if (pedido == null) {
-            return response.notFound("Não encontrado");
-        }
-        return response.ok(pedido);
-    }
-
-    public async inactivate({ response ,params}: HttpContextContract) {
-      
-        const id = params.id;
-
-        try {
-
-            const doacao = await DoacaoAquario.findByOrFail("id", id);
-            
-            doacao.merge({
-                status: 2
-            });
-
-            await doacao.save();
-
-
-            return response.ok(true);
-
-        } catch (error) {
-            return response.badRequest("Something in the request is wrong");
-        }
-
-    }
-
-    public async activate({ response ,params}: HttpContextContract) {
-      
-        const id = params.id;
-
-        try {
-
-            const doacao = await DoacaoAquario.findByOrFail("id", id);
-            
-            doacao.merge({
-                status: 1
-            });
-
-            await doacao.save();
-
-
-            return response.ok(true);
-
-        } catch (error) {
-            return response.badRequest("Something in the request is wrong");
-        }
-
-    }
-
-    public async delete({ response ,params}: HttpContextContract) {
-      
-        const id = params.id;
-
-        try {
-
-            const doacao = await DoacaoAquario.findByOrFail("id", id);
-            
-            doacao.merge({
-                status: 3
-            });
-
-            await doacao.save();
-
-
-            return response.ok(true);
-
-        } catch (error) {
-            return response.badRequest("Something in the request is wrong");
-        }
-
-    }   
-
-    public async updatePhoto({ request, response, params}: HttpContextContract) {
-        const payload = await request.validate(EditCreatePhotoClienteValidator);
-      
-            const id = params.id;    
-
-        try {       
-            const aquario = await Aquario.findByOrFail("id", id);
-
-            aquario.merge({
-                foto: payload.foto
-            });
-
-            await aquario.save();
-
-            return response.ok({
-            id:aquario.id,
-            foto:aquario.foto
+    const doacoes = await DoacaoAquario.query()
+      .where("cliente_id_doador", cliente.id)
+      .where("status", 1)
+      .orWhere("status", 2)
+      .preload("cliente_doador", (addressQuery) => {
+        addressQuery.preload("usuario").preload("endereco", (cityQuery) => {
+          cityQuery.preload("cidade", (stateQuery) => {
+            stateQuery.preload("estado");
+          });
         });
+      })
+      .preload("aquario")
+      .orderBy("created_at", "desc");
 
-        } catch (error) {
-            return response.badRequest("Something in the request is wrong");
-        }
+    return response.ok(doacoes);
+  }
 
-    }
+  public async show({ params, response }: HttpContextContract) {
+    const idDoacao = params.id;
 
-    public async update({ request, response, params}: HttpContextContract) {
-        const payload = await request.validate(CreateDoacaoAquarioNotPhotoValidator);
-      
-            const id = params.id;    
-    
-        try {       
-            const aquario = await Aquario.findByOrFail("id", id);
-    
-            aquario.merge({
-                capacidade: payload.capacidade,
-                descricao: payload.descricao
-            });
-    
-            await aquario.save();
-    
-            return response.ok({
-            id:aquario.id,
-            capacidade:aquario.capacidade,
-            descricao:aquario.descricao
+    const pedido = await DoacaoAquario.query()
+      .where("id", idDoacao)
+      .preload("cliente_doador", (addressQuery) => {
+        addressQuery.preload("usuario").preload("endereco", (cityQuery) => {
+          cityQuery.preload("cidade", (stateQuery) => {
+            stateQuery.preload("estado");
+          });
         });
-    
-        } catch (error) {
-            return response.badRequest("Something in the request is wrong");
-        }
-    
+      })
+      .preload("aquario")
+      .orderBy("id", "desc")
+      .first();
+
+    if (pedido == null) {
+      return response.notFound("Não encontrado");
     }
+    return response.ok(pedido);
+  }
+
+  public async inactivate({ response, params }: HttpContextContract) {
+    const id = params.id;
+
+    try {
+      const doacao = await DoacaoAquario.findByOrFail("id", id);
+
+      doacao.merge({
+        status: 2,
+      });
+
+      await doacao.save();
+
+      return response.ok(true);
+    } catch (error) {
+      return response.badRequest("Something in the request is wrong");
+    }
+  }
+
+  public async activate({ response, params }: HttpContextContract) {
+    const id = params.id;
+
+    try {
+      const doacao = await DoacaoAquario.findByOrFail("id", id);
+
+      doacao.merge({
+        status: 1,
+      });
+
+      await doacao.save();
+
+      return response.ok(true);
+    } catch (error) {
+      return response.badRequest("Something in the request is wrong");
+    }
+  }
+
+  public async delete({ response, params }: HttpContextContract) {
+    const id = params.id;
+
+    try {
+      const doacao = await DoacaoAquario.findByOrFail("id", id);
+
+      doacao.merge({
+        status: 3,
+      });
+
+      await doacao.save();
+
+      return response.ok(true);
+    } catch (error) {
+      return response.badRequest("Something in the request is wrong");
+    }
+  }
+
+  public async updatePhoto({ request, response, params }: HttpContextContract) {
+    const payload = await request.validate(EditCreatePhotoClienteValidator);
+
+    const id = params.id;
+
+    try {
+      const aquario = await Aquario.findByOrFail("id", id);
+
+      aquario.merge({
+        foto: payload.foto,
+      });
+
+      await aquario.save();
+
+      return response.ok({
+        id: aquario.id,
+        foto: aquario.foto,
+      });
+    } catch (error) {
+      return response.badRequest("Something in the request is wrong");
+    }
+  }
+
+  public async update({ request, response, params }: HttpContextContract) {
+    const payload = await request.validate(
+      CreateDoacaoAquarioNotPhotoValidator
+    );
+
+    const id = params.id;
+
+    try {
+      const aquario = await Aquario.findByOrFail("id", id);
+
+      aquario.merge({
+        capacidade: payload.capacidade,
+        descricao: payload.descricao,
+      });
+
+      await aquario.save();
+
+      return response.ok({
+        id: aquario.id,
+        capacidade: aquario.capacidade,
+        descricao: aquario.descricao,
+      });
+    } catch (error) {
+      return response.badRequest("Something in the request is wrong");
+    }
+  }
 }

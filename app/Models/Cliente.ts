@@ -1,11 +1,11 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
-import Endereco from './Endereco';
-import User from './User';
+import { DateTime } from "luxon";
+import { BaseModel, column, hasOne, HasOne } from "@ioc:Adonis/Lucid/Orm";
+import Endereco from "./Endereco";
+import User from "./User";
 
 export default class Cliente extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
   public userId: number;
@@ -16,22 +16,21 @@ export default class Cliente extends BaseModel {
   @column()
   public telefone: string;
 
-
   @column()
   public foto: string;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
 
   @hasOne(() => Endereco, {
     localKey: "id",
-    foreignKey: "clienteId"
+    foreignKey: "clienteId",
   })
   public endereco: HasOne<typeof Endereco>;
 
   @hasOne(() => User, {
     localKey: "userId",
-    foreignKey: "id"
+    foreignKey: "id",
   })
   public usuario: HasOne<typeof User>;
 }

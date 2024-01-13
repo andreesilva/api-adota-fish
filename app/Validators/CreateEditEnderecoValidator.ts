@@ -1,15 +1,14 @@
-import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { schema, CustomMessages, rules } from "@ioc:Adonis/Core/Validator";
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
 export default class CreateEditEnderecoValidator {
-  constructor(protected ctx: HttpContextContract) { }
-
+  constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
     cidade_id: schema.number([
       rules.exists({
         table: "cidades",
-        column: "id"
+        column: "id",
       }),
     ]),
     rua: schema.string({ trim: true }, [rules.maxLength(255)]),
@@ -21,6 +20,5 @@ export default class CreateEditEnderecoValidator {
     complemento: schema.string.nullableAndOptional(),
   });
 
-
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {};
 }

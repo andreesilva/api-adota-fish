@@ -1,30 +1,27 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
-import Cliente from './Cliente'
-import Aquario from './Aquario'
+import { DateTime } from "luxon";
+import { BaseModel, column, HasOne, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import Cliente from "./Cliente";
+import Aquario from "./Aquario";
 
 export default class DoacaoAquario extends BaseModel {
-  @column({ isPrimary: true})
-  public id: number
+  @column({ isPrimary: true })
+  public id: number;
 
   @column()
-  public cliente_id_doador: number
+  public cliente_id_doador: number;
 
   @column()
-  public cliente_id_adotante: number
-
-
-  @column()
-  public aquario_id: number
+  public cliente_id_adotante: number;
 
   @column()
-  public status: number
-  
+  public aquario_id: number;
+
+  @column()
+  public status: number;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
-  
   @hasOne(() => Cliente, {
     foreignKey: "id",
     localKey: "cliente_id_doador",

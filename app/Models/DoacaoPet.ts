@@ -1,27 +1,26 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
-import Cliente from './Cliente'
-import Pet from './Pet'
+import { DateTime } from "luxon";
+import { BaseModel, column, HasOne, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import Cliente from "./Cliente";
+import Pet from "./Pet";
 
 export default class DoacaoPet extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: number;
 
   @column()
-  public cliente_id_doador: number
+  public cliente_id_doador: number;
 
   @column()
-  public cliente_id_adotante: number
+  public cliente_id_adotante: number;
 
   @column()
-  public pet_id: number
+  public pet_id: number;
 
   @column()
-  public status: number
-  
+  public status: number;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @hasOne(() => Cliente, {
     foreignKey: "id",
