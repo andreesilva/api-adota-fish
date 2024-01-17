@@ -1,4 +1,4 @@
-<h1 align="center"> Adota Fish </h1>
+<h1 align="center"> API Adota Fish </h1>
 
 <h1 align="center">
     <img alt="API Adota Fish" title="#Adota Fish" src="https://raw.githubusercontent.com/andreesilva/app_adota_fish/main/assets/recurso_grafico.png" />
